@@ -14,8 +14,6 @@ class ImagesBlocProvider extends InheritedWidget {
         super(key: key, child: child);
 
   static ImagesBloc of(BuildContext context) {
-    return (context.inheritFromWidgetOfExactType(ImagesBlocProvider)
-            as ImagesBlocProvider)
-        .bloc;
+    return (context.inheritFromWidgetOfExactType(ImagesBlocProvider) as ImagesBlocProvider).bloc;
   }
 }

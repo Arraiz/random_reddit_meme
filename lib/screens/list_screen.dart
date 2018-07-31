@@ -5,6 +5,8 @@ import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
 
 class ListScreen extends StatelessWidget {
+  List<String> images = [];
+
   @override
   Widget build(BuildContext context) {
     final bloc = ImagesBlocProvider.of(context);
@@ -13,21 +15,7 @@ class ListScreen extends StatelessWidget {
       appBar: AppBar(title: Text('Random Memes')),
       body: Container(
         child: StreamBuilder(
-          stream: bloc.imagesController.stream,
-          builder: (context, AsyncSnapshot<Future<ImageModel>> snapshot) {
-            if (!snapshot.hasData) {
-              return Container();
-            }
-            return FutureBuilder(
-              future: snapshot.data,
-              builder: (context, AsyncSnapshot<ImageModel> itemSnapshot) {
-                if (!itemSnapshot.hasData) {
-                  return emptyImage();
-                }
-                return imageWidget(itemSnapshot.data);
-              },
-            );
-          },
+          stream: bloc.imagesListStream.stream,
         ),
       ),
       floatingActionButton: FloatingActionButton(onPressed: () {
