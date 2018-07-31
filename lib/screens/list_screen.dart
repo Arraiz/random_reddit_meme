@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:raddit_picks_bloc/blocs/images_bloc_provider.dart';
 import 'package:raddit_picks_bloc/models/image_model.dart';
 import 'dart:async';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:rxdart/rxdart.dart';
 
 class ListScreen extends StatelessWidget {
   List<String> images = [];
@@ -15,7 +15,19 @@ class ListScreen extends StatelessWidget {
       appBar: AppBar(title: Text('Random Memes')),
       body: Container(
         child: StreamBuilder(
-          stream: bloc.imagesListStream.stream,
+          stream: bloc.imagesController.stream
+              .transform(ScanStreamTransformer((acc, data, index) {
+            acc[index] = data;
+            print(acc);
+            return acc;
+          }, <int, Future<ImageModel>>{})),
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) {
+              return Text('no data');
+            } else {
+              return Text("${snapshot.data}");
+            }
+          },
         ),
       ),
       floatingActionButton: FloatingActionButton(onPressed: () {
