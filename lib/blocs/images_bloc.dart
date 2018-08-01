@@ -12,8 +12,16 @@ class ImagesBloc {
     imagesController.sink.add(repo.fetchImage());
   }
 
-
-
+  ImagesBloc() {
+    imagesController.stream
+        .transform(ScanStreamTransformer(
+            (Map<int, Future<ImageModel>> acc, Future<ImageModel> data, index) {
+          acc[index] = data;
+          print(acc);
+          return acc;
+        }, <int, Future<ImageModel>>{}))
+        .pipe(imagesListStream);
+  }
 
   dispose() {
     imagesController.close();

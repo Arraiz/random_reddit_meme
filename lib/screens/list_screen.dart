@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:raddit_picks_bloc/blocs/images_bloc_provider.dart';
 import 'package:raddit_picks_bloc/models/image_model.dart';
 import 'dart:async';
-import 'package:rxdart/rxdart.dart';
 
 class ListScreen extends StatelessWidget {
   List<String> images = [];
@@ -10,22 +9,34 @@ class ListScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bloc = ImagesBlocProvider.of(context);
+    final controller = ScrollController();
 
     return Scaffold(
       appBar: AppBar(title: Text('Random Memes')),
       body: Container(
         child: StreamBuilder(
-          stream: bloc.imagesController.stream
-              .transform(ScanStreamTransformer((acc, data, index) {
-            acc[index] = data;
-            print(acc);
-            return acc;
-          }, <int, Future<ImageModel>>{})),
-          builder: (context, snapshot) {
+          stream: bloc.imagesListStream.stream,
+          builder:
+              (context, AsyncSnapshot<Map<int, Future<ImageModel>>> snapshot) {
             if (!snapshot.hasData) {
-              return Text('no data');
+              return Text('NO MEMES YET D:');
             } else {
-              return Text("${snapshot.data}");
+              return ListView.builder(
+                itemCount: snapshot.data.length,
+                shrinkWrap: true,
+                itemBuilder: (context, index) {
+                  return FutureBuilder(
+                    future: snapshot.data[index],
+                    builder:
+                        (context, AsyncSnapshot<ImageModel> imageSnapshot) {
+                      if (!imageSnapshot.hasData) {
+                        return emptyImage();
+                      }
+                      return imageWidget(imageSnapshot.data);
+                    },
+                  );
+                },
+              );
             }
           },
         ),
@@ -48,6 +59,6 @@ class ListScreen extends StatelessWidget {
 
   Widget imageWidget(ImageModel image) {
     //corregir: mostrar indicador de que la imagen carga no que desaparezca elplaceholder y luego aparezca la imagen
-    return Center(child: Image.network(image.url));
+    return Center(child: Text('${image.width}+${image.height}'));
   }
 }
