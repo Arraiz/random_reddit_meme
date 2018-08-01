@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:raddit_picks_bloc/blocs/images_bloc_provider.dart';
 import 'package:raddit_picks_bloc/models/image_model.dart';
 import 'dart:async';
+import 'package:http/http.dart' show BaseClient;
 
 class ListScreen extends StatelessWidget {
   List<String> images = [];
@@ -30,9 +31,10 @@ class ListScreen extends StatelessWidget {
                     builder:
                         (context, AsyncSnapshot<ImageModel> imageSnapshot) {
                       if (!imageSnapshot.hasData) {
-                        return emptyImage();
+                        return Center(child: CircularProgressIndicator());
                       }
-                      return imageWidget(imageSnapshot.data);
+                      return emptyImage(
+                          imageSnapshot.data.height, imageSnapshot.data.width);
                     },
                   );
                 },
@@ -47,18 +49,21 @@ class ListScreen extends StatelessWidget {
     );
   }
 
-  Widget emptyImage() {
+  Widget emptyImage(int height, int width) {
     return Center(
       child: Container(
-        height: 200.0,
-        width: 200.0,
+        margin: EdgeInsets.only(left: 20.0, right: 20.0, bottom: 10.0),
+        height: height.toDouble(),
+        width: (width.toDouble()),
         color: Colors.grey[400],
+        child: Divider(
+          height: 20.0,
+        ),
       ),
     );
   }
 
-  Widget imageWidget(ImageModel image) {
+  Future<Widget> imageWidget(ImageModel image) async {
     //corregir: mostrar indicador de que la imagen carga no que desaparezca elplaceholder y luego aparezca la imagen
-    return Center(child: Text('${image.width}+${image.height}'));
   }
 }
